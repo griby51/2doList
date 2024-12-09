@@ -1,38 +1,32 @@
 {
     "lists":[
-            {
-                "name":"List 1",
-                "items":[
-                    {
-                        "name":"Item 1",
-                        "checked":false                     
-                    },
-                    {
-                        "name":"Item 2",
-                        "checked":false
-                    },
-                    {
-                        "name":"Item 3",
-                        "checked":false
-                    }
-                ]
-            },
-            {
-                "name":"List 2",
-                "items":[
-                    {
-                        "name":"Item 1",
-                        "checked":true
-                    },
-                    {
-                        "name":"Item 2",
-                        "checked":true
-                    },
-                    {
-                        "name":"Item 3",
-                        "checked":false
-                    }
-                ]
-            }
-        ]   
+        {
+            "name":"To Do",
+            "done":false,
+            "tasks":[
+                {
+                    "name":"Task 1",
+                    "done":false
+                },
+                {
+                    "name":"Task 2",
+                    "done":true
+                }
+            ]
+        },
+        {
+            "name":"depnoiefned",
+            "done":true,
+            "tasks":[
+                {
+                    "name":"Task",
+                    "done":true
+                },
+                {
+                    "name":"Task",
+                    "done":true
+                }
+            ]
+        }
+    ]
 }

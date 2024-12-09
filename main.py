@@ -1,73 +1,41 @@
-#2doList
-import tkinter as tk
-import tkinter.ttk as ttk
-from PIL import ImageTk, Image
+from prompt_toolkit import Application
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout import Layout, VSplit
+from prompt_toolkit.widgets import Box, Frame, TextArea, Label
+from prompt_toolkit.styles import Style
 import json
 
-lists = []
+with open("data.json", "r") as f:
+    data = json.load(f)
 
-def strike(text):
-    return ''.join([u'\u0336{}'.format(c) for c in text])
+style = Style.from_dict({
+    "frame" : "bg:#040404 fg:#106cbc", 
+    "box" : "bg:#040404 fg:#106cbc",
+})
 
-def refreshLists(_lists):
-    with open("data.json", "r") as f:
-        _lists = json.load(f)["lists"]
-    return _lists
+_list = data["lists"]
 
-window = tk.Tk()
-window.title("2doList")
-window.resizable(width=False, height=True)
-window.geometry("1080x720")
-window.minsize(1080, 720)
-window.configure(bg="#1e1e1e")
+kb = KeyBindings()
 
-inactiveAddListBtnImg = tk.PhotoImage(file="assets/addListBtnInactive.png") 
-inactiveAddListBtnLabel = tk.Label(window, image=inactiveAddListBtnImg, bg="#1e1e1e")
+list_area = TextArea(text="List area")
+task_area = TextArea(text="Task area")
 
-titleLabelList = tk.Label(window, text="Vos listes :", font=("Arial", 20), fg="#00b1b1", bg="#1e1e1e")
+list_frame = Frame(title="Lists", body=list_area, style="class:frame")
+task_frame = Frame(title="Tasks", body=task_area, style="class:frame")
 
-#pack at the top lefttitleLabelList.grid(row=1, column=2)
+layout = Layout(VSplit(
+    [
+        Box(list_frame, padding=1, style="class:box"),
+        Box(task_frame, padding=1, style="class:box"),
+    ]
+))
 
-titleLabelList.pack(anchor="nw", padx=20, pady=10)
-inactiveAddListBtnLabel.pack()
+app = Application(layout=layout, key_bindings=kb, full_screen=True, style=style)
 
+#quit the application
+@kb.add("c-q")
+def _(event):
+    event.app.exit()
 
-lists = refreshLists(lists)
-for list in lists:
-    activeBackgoundSquare = tk.PhotoImage(file="assets/emptyActiveButton.png")
-    inactiveBackgoundSquare = tk.PhotoImage(file="assets/emptyInactiveButton.png")
-
-    listIsSelected = ttk.Checkbutton(window, text=strike(list["name"]), image=inactiveBackgoundSquare)
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-col_count, row_count = window.grid_size()
-
-for i in range(col_count):
-    window.columnconfigure(i, minsize=10)
-
-for i in range(row_count):
-    window.rowconfigure(i, minsize=10)
-window.mainloop()
+if __name__ == "__main__":
+    app.run()
