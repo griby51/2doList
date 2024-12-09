@@ -2,6 +2,7 @@
     "lists":[
         {
             "name":"To Do",
+            "id":0,
             "done":false,
             "tasks":[
                 {
@@ -17,6 +18,7 @@
         {
             "name":"depnoiefned",
             "done":true,
+            "id":1,
             "tasks":[
                 {
                     "name":"Task",
