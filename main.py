@@ -14,93 +14,89 @@ with open("data.json", "r") as f:
 style = Style.from_dict({
     "frame": "bg:#040404 fg:#106cbc",
     "box": "bg:#040404 fg:#106cbc",
-    "task-done": "fg:#00ff00",  # Vert pour les tâches terminées
-    "task-not-done": "fg:#ff0000",  # Rouge pour les tâches non terminées
-    "list-done": "strike",
-    "selected-list" : "bg:#106cbc fg:#040404",
-    "normal-list" : "bg:#040404 fg:#106cbc",
+    "list-undone-unselected": "bg:#040404 fg:#0b4583",
+    "list-undone-selected": "bg:#106cbc fg:#05224b",
+    "list-done-unselected": "bg:#040404 fg:#0b4583 strike",
+    "list-done-selected": "bg:#106cbc fg:#05224b strike",
 })
-
-selectedList = 1
-
-allList = data["lists"]
 
 kb = KeyBindings()
 
-def updateList(lists):
-    formatted_text = []
-    
-    for i in lists:
-        if i["id"] == selectedList:
-            formatted_text.append(("class:selected-list", i["name"] + "\n"))
-        else:
-            formatted_text.append(("class:normal-list", i["name"] + "\n"))
+class List:
+    def __init__(self, name, done, id, tasks):
+        self.name = name
+        self.done = done
+        self.id = id
+        self.tasks = tasks
 
+    class Task:
+        def __init__(self, name, done):
+            self.name = name
+            self.done = done
+
+all_list = []
+
+for list in data["lists"]:
+    all_list.append(List(list["name"], list["done"], list["id"], list["tasks"]))
+
+def updateListArea(done_style, not_done_style, selected_done_style, selected_not_done_style, selected=None):
+    formatted_text = []
+
+    for list in all_list:
+        style = done_style if list.done else not_done_style
+        if list.id == selected:
+            style = selected_done_style if list.done else selected_not_done_style
+        formatted_text.append((style, list.name + "\n"))  
     return FormattedTextControl(formatted_text)
 
-# Générer le contenu de la liste de tâches formaté
-def updateTaskIfDone(task):
-    formatted_text = []
-    
-    for i in task:
-        color = "class:task-done" if i["done"] else "class:task-not-done"
-        formatted_text.append((color, i["name"] + "\n"))
-    return FormattedTextControl(formatted_text)
+def addList(new_list):
+    all_list.append(new_list)
+
+selected_list = None if len(all_list) == 0 else 0
+
+list_area = Window(content=updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list))
+list_frame = Frame(list_area, style="class:frame", title="Listes")
+
+input_area = TextArea(multiline=False)
+input_frame = Frame(input_area, style="class:frame", height=1)
+
+show_input_frame = False
+
+def updateLayout():
+    global layout, show_input_frame
+    content = [Box(list_frame,padding=1,style="class:box")]
+    if show_input_frame:
+        content = [Box(list_frame,padding=1,style="class:box"), Box(input_frame,padding=1,style="class:box")]
+    layout.container = HSplit(content)
 
 
-# Créer les zones de texte
-list_area = Window(content=updateList(allList))
+layout = Layout(HSplit([Box(list_frame,padding=1,style="class:box")]))
 
-task_area = Window(content=updateTaskIfDone(allList[selectedList]["tasks"]))
 
-# Encadrer les zones de texte
-list_frame = Frame(title="Lists", body=list_area, style="class:frame")
-task_frame = Frame(title="Tasks", body=task_area, style="class:frame")
+app = Application(key_bindings=kb, full_screen=True, style=style, layout=layout)
 
-input_area = TextArea(prompt="", height=1, style="class:input")
-input_frame = Frame(title="Input", style="class:frame", body=input_area)
-
-# Mise en page
-layout = Layout(VSplit(
-    [
-        HSplit([
-            Box(list_frame, padding=1, style="class:box"),
-            Box(input_frame, padding=1, style="class:box"),
-        ]),
-
-        Box(task_frame, padding=1, style="class:box"),
-    ]
-))
-
-# Application
-app = Application(layout=layout, key_bindings=kb, full_screen=True, style=style)
-
-# Quitter l'application
 @kb.add("c-q")
 def _(event):
     event.app.exit()
 
 @kb.add("up")
 def _(event):
-    global selectedList
-    if selectedList == 0:
-        selectedList = len(allList) - 1
-    else:
-        selectedList -= 1
-
-    list_area.content = updateList(allList)
-    task_area.content = updateTaskIfDone(allList[selectedList]["tasks"])
+    global selected_list
+    selected_list = (selected_list - 1) % len(all_list)
+    list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
 
 @kb.add("down")
 def _(event):
-    global selectedList
-    if selectedList == len(allList) - 1:
-        selectedList = 0
-    else:
-        selectedList += 1
+    global selected_list
+    selected_list = (selected_list + 1) % len(all_list)
+    list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
 
-    list_area.content = updateList(allList)
-    task_area.content = updateTaskIfDone(allList[selectedList]["tasks"])
+@kb.add("+")
+def _(event):
+    global layout
+    global show_input_frame
+    show_input_frame = True
+    updateLayout()    
 
 if __name__ == "__main__":
     app.run()
