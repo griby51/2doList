@@ -62,15 +62,10 @@ input_frame = Frame(input_area, style="class:frame", height=1)
 
 show_input_frame = False
 
-def updateLayout():
-    global layout, show_input_frame
-    content = [Box(list_frame,padding=1,style="class:box")]
-    if show_input_frame:
-        content = [Box(list_frame,padding=1,style="class:box"), Box(input_frame,padding=1,style="class:box")]
-    layout.container = HSplit(content)
 
-
-layout = Layout(HSplit([Box(list_frame,padding=1,style="class:box")]))
+layout = Layout(HSplit([Box(list_frame,padding=1,style="class:box"),
+                        Box(input_frame,padding=1,style="class:box")
+                        ]))
 
 
 app = Application(key_bindings=kb, full_screen=True, style=style, layout=layout)
@@ -90,13 +85,6 @@ def _(event):
     global selected_list
     selected_list = (selected_list + 1) % len(all_list)
     list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
-
-@kb.add("+")
-def _(event):
-    global layout
-    global show_input_frame
-    show_input_frame = True
-    updateLayout()    
 
 if __name__ == "__main__":
     app.run()
