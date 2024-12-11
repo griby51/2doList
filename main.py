@@ -58,14 +58,11 @@ list_area = Window(content=updateListArea("class:list-done-unselected", "class:l
 list_frame = Frame(list_area, style="class:frame", title="Listes")
 
 input_area = TextArea(multiline=False)
-input_frame = Frame(input_area, style="class:frame", height=1)
-
-show_input_frame = False
-
+input_frame = Frame(input_area, style="class:frame")
 
 layout = Layout(HSplit([Box(list_frame,padding=1,style="class:box"),
-                        Box(input_frame,padding=1,style="class:box")
                         ]))
+
 
 
 app = Application(key_bindings=kb, full_screen=True, style=style, layout=layout)
@@ -85,6 +82,24 @@ def _(event):
     global selected_list
     selected_list = (selected_list + 1) % len(all_list)
     list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
+
+@kb.add("+")
+def _(event):
+    global layout, app
+    layout = Layout(HSplit([Box(list_frame, padding=1, style="class:box"), Box(input_frame, padding=1, style="class:box")]))
+    app.layout = layout
+    app.layout.focus(input_area)
+
+@kb.add("enter")
+def _(event):
+    if input_area.buffer.text.strip():
+        addList(List(input_area.text, False, len(all_list), []))
+        input_area.text = ""
+        list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
+        layout = Layout(HSplit([Box(list_frame, padding=1, style="class:box")]))
+        app.layout = layout
+
+
 
 if __name__ == "__main__":
     app.run()
