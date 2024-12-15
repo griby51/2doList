@@ -51,16 +51,15 @@ if len(all_list) != 0:
     global selected_list
     selected_list = all_list[0]
 
-
-
 def updateListArea(done_style, not_done_style, selected_done_style, selected_not_done_style, selected=None):
     formatted_text = []
 
-    for list in all_list:
-        style = done_style if list.done else not_done_style
-        if list.id == selected.id:
-            style = selected_done_style if list.done else selected_not_done_style
-        formatted_text.append((style, list.name + "\n"))  
+    for i in all_list:
+        style = done_style if i.done else not_done_style
+        if i.id == selected.id:
+            style = selected_done_style if i.done else selected_not_done_style
+        formatted_text.append((style, i.name + "\n"))
+
     return FormattedTextControl(formatted_text)
 
 def updateTaskArea(done_style, not_done_style, selected_done_style, selected_not_done_style, selected_list=None):
@@ -104,13 +103,22 @@ def _(event):
 @kb.add("up")
 def _(event):
     global selected_list
-    selected_list.id = (selected_list.id - 1) % len(all_list)
+    if selected_list.id == 0:
+        selected_list = all_list[len(all_list) - 1]
+    else:
+        selected_list = all_list[selected_list.id - 1]
+    
+    task_area.content = updateTaskArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
     list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
 
 @kb.add("down")
 def _(event):
     global selected_list
-    selected_list.id = (selected_list.id + 1) % len(all_list)
+    if selected_list.id == len(all_list) - 1:
+        selected_list = all_list[0]
+    else:
+        selected_list = all_list[selected_list.id + 1]
+        task_area.content = updateTaskArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
     list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
 
 @kb.add("+")
