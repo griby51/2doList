@@ -113,6 +113,7 @@ def _(event):
 
 @kb.add("down")
 def _(event):
+
     global selected_list
     if selected_list.id == len(all_list) - 1:
         selected_list = all_list[0]
@@ -124,7 +125,7 @@ def _(event):
 @kb.add("+")
 def _(event):
     global show_input_frame
-    layout = Layout(HSplit([Box(list_frame, padding=1, style="class:box"), Box(input_frame, padding=1, style="class:box")]))
+    layout = Layout(HSplit([VSplit([Box(list_frame, padding=1, style="class:box"), Box(task_frame, padding=1, style="class:box")]), Box(input_frame, padding=1, style="class:box")]))
     app.layout = layout
     app.layout.focus(input_area)
     show_input_frame = True
@@ -145,10 +146,9 @@ def _(event):
         addList(List(input_area.text, False, len(all_list), []))
         input_area.text = ""
         list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
-        layout = Layout(HSplit([Box(list_frame, padding=1, style="class:box")]))
+        layout = Layout(HSplit([VSplit([Box(list_frame, padding=1, style="class:box"), Box(task_frame, padding=1, style="class:box")])]))
         app.layout = layout
         show_input_frame = False
-
 
 
 if __name__ == "__main__":
