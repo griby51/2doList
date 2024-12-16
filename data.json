@@ -1,1 +1,4 @@
-{"lists": [{"name": "depnoiefned", "done": true, "id": 0, "tasks": [{"name": "Task", "done": true}, {"name": "Task", "done": true}]}, {"name": "hdhf", "id": 1, "done": false, "tasks": []}]}
+{"lists": [{"name": "depnoiefned", "done": false, "id": 0, "tasks": [{"name": "caca", "done": false, "index": 0}, {"name": "Task", "done": true, "index": 1}]}, {"name": "hdhf", "id": 1, "done": false, "tasks": [
+    {"name": "tache 1", "done": false, "index": 0},
+    {"name": "prout", "done": true, "index": 1}
+]}]}
