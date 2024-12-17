@@ -40,6 +40,31 @@ class List:
             self.name = name
             self.done = done
             self.index = index
+    
+    def addTask(self, task_name):
+        new_id = len(self.tasks)  # Index basé sur la longueur actuelle des tâches
+        self.tasks.append(self.Task(task_name, False, new_id))
+    
+    def removeTask(self, task_id):
+        self.tasks = [task for task in self.tasks if task.index != task_id]
+        for task in self.tasks:
+            if task.index > task_id:
+                task.index -= 1
+
+    def toDict(self):
+        return {
+            "name": self.name,
+            "done": self.done,
+            "id": self.id,
+            "tasks": [
+                {
+                    "name": task.name,
+                    "done": task.done,
+                    "index": task.index
+                }
+                for task in self.tasks
+            ]
+        }
 
 all_list = []
 
@@ -81,10 +106,27 @@ def updateTaskArea(done_style, not_done_style, selected_done_style, selected_not
 def addList(new_list):
     all_list.append(new_list)
 
+def removeList(index):
+    all_list.pop(index)
+
 selected_list = None if len(all_list) == 0 else all_list[0]
 if selected_list is not None and len(selected_list.tasks) != 0:
     selected_task = selected_list.tasks[0]
 
+def saveSelectedList():
+    global selected_list
+    if selected_list is not None:
+        all_list[selected_list.id] = selected_list
+
+def saveSelectedTask():
+    global selected_task
+    if selected_task is not None:
+        selected_list.tasks[selected_task.index] = selected_task
+
+def saveData():
+    saveSelectedList()
+    with open("data.json", "w") as f:
+        json.dump({"lists": [i.toDict() for i in all_list]}, f)
 
 list_area = Window(content=updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list))
 list_frame = Frame(list_area, style="class:frame", title="Listes")
@@ -100,11 +142,16 @@ layout = Layout(VSplit([Box(list_frame,padding=1,style="class:box"), Box(task_fr
 
 show_input_frame = False
 is_in_task_area = False
+is_modifying = False
 
 app = Application(key_bindings=kb, full_screen=True, style=style, layout=layout)
 
 @kb.add("c-q")
 def _(event):
+    try :
+        saveData()
+    except:
+        pass
     event.app.exit()
 
 @kb.add("up")
@@ -153,6 +200,40 @@ def _(event):
     app.layout.focus(input_area)
     show_input_frame = True
 
+@kb.add("-")
+def _(event):
+    global is_in_task_area, selected_task, selected_list
+    if not is_in_task_area:
+        removeList(selected_list.id)
+        if len(all_list) == 1:
+            selected_list = None
+        else:
+            selected_list = all_list[(selected_list.id + 1) % len(all_list)]
+        list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
+        task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list)
+    else:
+        selected_list.removeTask(selected_task.index)
+        if len(selected_list.tasks) == 0:
+            is_in_task_area = False
+            task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list)
+        else:
+            selected_task = selected_list.tasks[0]
+            task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list, selected_task)
+
+@kb.add("m") #modify name
+def _(event):
+    global show_input_frame, is_modifying
+    if not show_input_frame:
+        layout = Layout(HSplit([VSplit([Box(list_frame, padding=1, style="class:box"), Box(task_frame, padding=1, style="class:box")]), Box(input_frame, padding=1, style="class:box")]))
+        app.layout = layout
+        app.layout.focus(input_area)
+        show_input_frame = True
+        is_modifying = True
+
+        
+    
+
+
 @kb.add("escape")
 def _(event):
     global show_input_frame, is_in_task_area
@@ -164,20 +245,43 @@ def _(event):
         is_in_task_area = False
         task_area.content = updateTaskArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
 
-
 @kb.add("enter")
 def _(event):
-    global show_input_frame, is_in_task_area
+    global show_input_frame, is_in_task_area, is_modifying, selected_task
     if input_area.buffer.text.strip():
-        addList(List(input_area.text, False, len(all_list), []))
-        input_area.text = ""
-        list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
-        layout = Layout(HSplit([VSplit([Box(list_frame, padding=1, style="class:box"), Box(task_frame, padding=1, style="class:box")])]))
-        app.layout = layout
-        show_input_frame = False
+        if not is_in_task_area:
+            if is_modifying:
+                selected_list.name = input_area.text
+                is_modifying = False
+                saveSelectedList()
+            else:
+                addList(List(input_area.text, False, len(all_list), []))
+            input_area.text = ""
+            list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
+            layout = Layout(HSplit([VSplit([Box(list_frame, padding=1, style="class:box"), Box(task_frame, padding=1, style="class:box")])]))
+            app.layout = layout
+            show_input_frame = False
+        else:
+            if is_modifying:
+                selected_task.name = input_area.text
+                is_modifying = False
+                saveSelectedTask()
+            else:
+                selected_list.addTask(input_area.text)
+            input_area.text = ""
+            task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list, selected_list.tasks[len(selected_list.tasks) - 1])
+            layout = Layout(HSplit([VSplit([Box(list_frame, padding=1, style="class:box"), Box(task_frame, padding=1, style="class:box")])]))
+            app.layout = layout
+            show_input_frame = False
+            saveSelectedList()
+
     elif not is_in_task_area:
         is_in_task_area = True
-        task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list, selected_list.tasks[0])
+        if selected_list.tasks: task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list, selected_list.tasks[0])
+    elif is_in_task_area:
+        selected_task.done = not selected_task.done
+        task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list, selected_task)
+        saveSelectedList()
 
 
 if __name__ == "__main__":
