@@ -70,6 +70,9 @@ class List:
         }
 
 all_list = []
+show_input_frame = False
+is_in_task_area = False
+is_modifying = False
 
 
 for _list in data["lists"]:
@@ -89,7 +92,10 @@ def updateListArea(done_style, not_done_style, selected_done_style, selected_not
                 style = selected_done_style if i.done else selected_not_done_style
         except:
             pass
-        formatted_text.append((style, i.name + "\n"))
+        if is_in_task_area and i.id == selected_list.id:
+            formatted_text.append((style, ">> " + i.name + "\n"))
+        else:
+            formatted_text.append((style, i.name + "\n"))
 
     return FormattedTextControl(formatted_text)
 
@@ -147,9 +153,6 @@ input_frame = Frame(input_area, style="class:frame")
 
 layout = Layout(VSplit([Box(list_frame,padding=1,style="class:box"), Box(task_frame,padding=1,style="class:box")]))
 
-show_input_frame = False
-is_in_task_area = False
-is_modifying = False
 
 app = Application(key_bindings=kb, full_screen=True, style=style, layout=layout)
 
@@ -185,12 +188,12 @@ def _(event):
     if not is_in_task_area:
         global selected_list
         if selected_list is not None and len(all_list) != 1:
-            removeList(selected_list.id)
             if selected_list.id == len(all_list) - 1:
                 selected_list = all_list[0]
             else:
                 selected_list = all_list[selected_list.id + 1]
             if len(all_list) == 0: selected_list = None
+
         task_area.content = updateTaskArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
         list_area.content = updateListArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list)
     
@@ -292,6 +295,7 @@ def _(event):
     elif not is_in_task_area:
         is_in_task_area = True
         if selected_list.tasks: task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list, selected_list.tasks[0])
+        list_area.content = updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list)
     elif is_in_task_area:
         try:
             selected_task.done = not selected_task.done
@@ -299,7 +303,6 @@ def _(event):
             saveSelectedList()
         except:
             pass
-
 
 if __name__ == "__main__":
     app.run()
