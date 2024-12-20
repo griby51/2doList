@@ -2,8 +2,8 @@
 
 SCRIPT_NAME="main.py"
 COMMAND_NAME="tdl"
-TARGET_DIR="usr/local/bin"
-SHARE_DIR="usr/local/share/$COMMAND_NAME"
+TARGET_DIR="/usr/local/bin"
+SHARE_DIR="/usr/local/share/$COMMAND_NAME"
 PIP_REQUIREMENTS="requirements.txt"
 
 if [! -f "$SCRIPT_NAME" ] || [! -f "$PIP_REQUIREMENTS" ]; then

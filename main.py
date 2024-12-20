@@ -232,7 +232,7 @@ def _(event):
             selected_task = selected_list.tasks[0]
             task_area.content = updateTaskArea("class:task-done-unselected", "class:task-undone-unselected", "class:task-done-selected", "class:task-undone-selected", selected_list, selected_task)
 
-@kb.add("m") #modify name
+@kb.add(",") #modify name
 def _(event):
     global show_input_frame, is_modifying
     if not show_input_frame:
