@@ -6,9 +6,10 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.layout.controls import FormattedTextControl
 import json
 
+DATA_FILE = "~/.tdl_data.json"
 # Charger les données depuis le fichier JSON
 try :
-    with open("data.json", "r") as f:
+    with open(DATA_FILE, "r") as f:
         data = json.load(f)
 except FileNotFoundError:
     data = {"lists": []}
@@ -138,7 +139,7 @@ def saveSelectedTask():
 
 def saveData():
     saveSelectedList()
-    with open("data.json", "w") as f:
+    with open(DATA_FILE, "w") as f:
         json.dump({"lists": [i.toDict() for i in all_list]}, f)
 
 list_area = Window(content=updateListArea("class:list-done-unselected", "class:list-undone-unselected", "class:list-done-selected", "class:list-undone-selected", selected_list))
