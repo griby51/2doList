@@ -15,8 +15,8 @@ except FileNotFoundError:
 
 # Styles pour l'application
 style = Style.from_dict({
-    "frame": "bg:#040404 fg:#106cbc",
-    "box": "bg:#040404 fg:#106cbc",
+    "frame": "fg:#106cbc",
+    "box": "fg:#106cbc",
 
     "list-undone-unselected": "bg:#040404 fg:#0b4583",
     "list-undone-selected": "bg:#106cbc fg:#05224b",
