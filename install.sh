@@ -6,7 +6,7 @@ TARGET_DIR="/usr/local/bin"
 SHARE_DIR="/usr/local/share/$COMMAND_NAME"
 PIP_REQUIREMENTS="requirements.txt"
 
-if [! -f "$SCRIPT_NAME" ] || [! -f "$PIP_REQUIREMENTS" ]; then
+if [ ! -f "$SCRIPT_NAME" ] || [ ! -f "$PIP_REQUIREMENTS" ]; then
     echo "$SCRIPT_NAME or $DATA_FILE or $PIP_REQUIREMENTS not found"
     exit 1
 fi
