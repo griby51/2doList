@@ -5,8 +5,9 @@ from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 from prompt_toolkit.styles import Style
 from prompt_toolkit.layout.controls import FormattedTextControl
 import json
+import os
 
-DATA_FILE = "~/.tdl_data.json"
+DATA_FILE = os.path.expanduser("~/.tdl_data.json")
 # Charger les données depuis le fichier JSON
 try :
     with open(DATA_FILE, "r") as f:
@@ -159,11 +160,8 @@ app = Application(key_bindings=kb, full_screen=True, style=style, layout=layout)
 
 @kb.add("c-q")
 def _(event):
-    try :
-        saveData()
-    except:
-        pass
-    event.app.exit()
+    saveData()
+    app.exit()
 
 @kb.add("up")
 def _(event):
