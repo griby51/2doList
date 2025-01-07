@@ -2,7 +2,7 @@
 
 ## Installation
 
-⚠️ Before installing these, you may have python and pip installed on your machine
+⚠️ Before installing these, you may have python and pip installed on your machine even if install.sh will install it for you
 
 To install as a terminal command type this in your terminal
 ```bash
@@ -19,7 +19,7 @@ python main.py
 
 ## Usage
 
-To use my simple 2doList app, simply type tdl in your terminal, the shortcut are those :
+To use my simple 2doList app, simply type `tdl` in your terminal, the shortcut are those or now you can start it with your application launcher like rofi or dmenu :
 
 | Why is it for                                | Shortcut |
 |----------------------------------------------|----------|
