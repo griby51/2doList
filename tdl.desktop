@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=To do list
+Exec=tdl
+Icon=/usr/share/icons/tdl.png
+Terminal=true

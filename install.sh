@@ -5,6 +5,8 @@ COMMAND_NAME="tdl"
 TARGET_DIR="/usr/local/bin"
 SHARE_DIR="/usr/local/share/$COMMAND_NAME"
 PIP_REQUIREMENTS="requirements.txt"
+LOGO_DIR="/usr/share/icons"
+DESKTOP_DIR="$HOME/.local/share/applications"
 
 insall_pip(){
     echo "Installing pip"
@@ -31,9 +33,13 @@ fi
 
 echo "Installing $COMMAND_NAME"
 
+echo "Creating directory"
 sudo mkdir -p "$SHARE_DIR"
 
+echo "Copying file"
 sudo cp "$SCRIPT_NAME" "$SHARE_DIR"
+sudo cp "logo.png" "$LOGO_DIR/$COMMAND_NAME.png"
+sudo cp "tdl.desktop" "$DESKTOP_DIR/$COMMAND_NAME.desktop"
 
 sudo chmod +x "$SHARE_DIR/$SCRIPT_NAME"
 
@@ -56,7 +62,7 @@ EOL
 
 sudo chmod +x $TARGET_DIR/$COMMAND_NAME
 
-if [ -f "$TARGET_DIR/$COMMAND_NAME" ]; then
+if [ -f "$TARGET_DIR/$COMMAND_NAME" ] || [ -f "$LOGO_DIR" ] || [ -f "$DESKTOP_DIR" ]; then
     echo "$COMMAND_NAME installed successfully"
 else
     echo "Failed to install $COMMAND_NAME"
