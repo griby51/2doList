@@ -62,7 +62,7 @@ EOL
 
 sudo chmod +x $TARGET_DIR/$COMMAND_NAME
 
-if [ -f "$TARGET_DIR/$COMMAND_NAME" ] || [ -f "$LOGO_DIR" ] || [ -f "$DESKTOP_DIR" ]; then
+if [[ -f "$TARGET_DIR/$COMMAND_NAME" ||  -f "$LOGO_DIR" || -f "$DESKTOP_DIR" || -f "$SHARE_DIR/$SCRIPT_NAME" ]]; then
     echo "$COMMAND_NAME installed successfully"
 else
     echo "Failed to install $COMMAND_NAME"
