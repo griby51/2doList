@@ -21,6 +21,7 @@ You can remove it by go to 2dolist directory or if you delete it cloning like in
 ```bash
 chmod +x uninstall.sh
 sudo ./uninstall.sh
+```
 
 ## Usage
 
