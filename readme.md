@@ -17,6 +17,11 @@ pip install prompt-toolkit
 python main.py
 ```
 
+You can remove it by go to 2dolist directory or if you delete it cloning like installing command and type this in your terminal
+```bash
+chmod +x uninstall.sh
+sudo ./uninstall.sh
+
 ## Usage
 
 To use my simple 2doList app, simply type `tdl` in your terminal, the shortcut are those or now you can start it with your application launcher like rofi or dmenu :
